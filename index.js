@@ -16,9 +16,23 @@ app.all("*", (req, res, next) => {
     next();
 });
 
-//查询
+//登录查询
 app.get('/search', (req, res) => {
     let sql = 'select * from stu';
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            // 做添加，result是一个对象，其中有一个属性affectedRows
+            // 表示本次操作之后，影响的行数 
+            // console.log(result); // result就是查询结果
+            res.json(result)
+        }
+    });
+})
+
+app.get('/searchhome', (req, res) => {
+    let sql = 'select * from home';
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
