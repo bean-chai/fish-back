@@ -1,0 +1,34 @@
+version: "3.7"
+services:
+  db:
+    image: mysql
+    ports:
+      - 3306:3306
+    container_name: familyback-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: chaichai
+      MYSQL_DATABASE: localbase
+      TZ: Asia/Shanghai
+    restart: always
+    command:
+      --max_connections=1000
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./database:/var/lib/mysql
+  app:
+    build:
+      context: .
+    image: familyback:1.0.0
+    ports:
+      - 3000:3000
+    container_name: familyback-app
+    restart: always
+    environment:
+      docker: "yes"
+    depends_on:
+      - db
+    volumes:
+      - ./:/app
+      - /app/node_modules/

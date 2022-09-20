@@ -11,7 +11,7 @@
 const mysql = require('mysql')
 
 const connection = mysql.createConnection({
-    host: 'localhost',
+    host: process.env.docker === 'yes' ? 'db' : 'localhost',
     user: 'root',
     password: 'chaichai',
     database: 'localbase'
@@ -19,7 +19,7 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
     // 如果有错误对象，表示连接失败
-    if (err) return console.log('数据库连接失败')
+    if (err) return console.log(`数据库连接失败，错误：${err.stack}`)
     // 没有错误对象提示连接成功
     console.log('mysql数据库连接成功')
 });
