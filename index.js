@@ -2,7 +2,7 @@
  * @Author: chaichai chaichai@cute.com
  * @Date: 2022-09-15 09:33:56
  * @LastEditors: chaichai chaichai@cute.com
- * @LastEditTime: 2022-09-19 14:48:07
+ * @LastEditTime: 2022-09-20 14:29:08
  * @FilePath: \mysqltest\index.js
  * @Description: 
  * 
@@ -130,7 +130,40 @@ app.post('/delhome', jsonParser, (req, res) => {
     });
 })
 
+app.post('/changeback', jsonParser, (req, res) => {
+    //通过id修改name和age属性值
+    let { userId, userName, passWord, Root } = req.body
+    console.log(req.body);
+    // update 表名 set 字段1=值1, 字段2=值2,...  where 修改条件
+    let sql = `update stu set user_name='${userName}',password='${passWord}',root='${Root}' where user_id=${userId}`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            // 做添加，result是一个对象，其中有一个属性affectedRows
+            // 表示本次操作之后，影响的行数 
+            // console.log(result); // result就是查询结果
+            res.json(result)
+        }
+    });
+})
 
+app.post('/delback', jsonParser, (req, res) => {
+    //通过id删除
+    let { id } = req.body
+    // delete  from 表名  where 删除条件
+    let sql = `delete from stu where user_id=${id}`;
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            // 做添加，result是一个对象，其中有一个属性affectedRows
+            // 表示本次操作之后，影响的行数 
+            // console.log(result); // result就是查询结果
+            res.json(result)
+        }
+    });
+})
 
 app.listen(3000, () => {
     console.log('3000端口就绪');
