@@ -11,10 +11,10 @@
 const mysql = require('mysql')
 
 const connection = mysql.createConnection({
-    host: process.env.docker === 'yes' ? 'db' : 'localhost',
+    host: 'localhost',
     user: 'root',
     password: 'chaichai',
-    database: 'localbase'
+    database: 'yizhe'
 })
 
 const createTable = (name, field) => {
