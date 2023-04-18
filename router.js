@@ -16,6 +16,7 @@ router.get('/search', (req, res) => {
         }
     });
 })
+//查询所有作者
 router.get('/searchAll', (req, res) => {
     let sql = 'select * from user';
     connection.query(sql, (err, result) => {
@@ -94,8 +95,8 @@ router.post('/add', jsonParser, (req, res, next) => {
 })
 //发布文章
 router.post('/newPaper', jsonParser, (req, res, next) => {
-    let { name, content, imgUrl, title, createTime, titleKey, titleImgUrl } = req.body
-    let sql = `insert into paper (auther,title,content,imgUrl,createTime,titleKey,titleImgUrl) values('${name}','${title}','${content}','${imgUrl.split('"')[1]}','${createTime}','${titleKey}','${titleImgUrl}')`
+    let { name, title, content, imgUrl, createTime, titleKey, titleImgUrl } = req.body
+    let sql = `insert into paper (auther,title,content,imgUrl,createTime,titleKey,titleImgUrl) values('${name}','${title}','${content}','${imgUrl}','${createTime}','${titleKey}','${titleImgUrl}')`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -104,10 +105,89 @@ router.post('/newPaper', jsonParser, (req, res, next) => {
         }
     });
 })
+
+//清空浏览记录
+router.get('/deleteWatch', (req, res) => {
+    let sql = 'truncate table watch';
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+
+//录入浏览记录
+router.post('/watch', jsonParser, (req, res, next) => {
+    let { lookId, paperId, caseStatus,likeStatus } = req.body
+    console.log(req.body);
+    let sql = `insert into watch (lookId,paperId, caseStatus,likeStatus) values('${lookId}','${paperId}','${caseStatus}','${likeStatus}')`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            console.log(result,'result');
+            res.json(result)
+        }
+    });
+})
+//浏览记录
+router.get('/watchInfo', (req, res) => {
+    let sql = `SELECT b.* FROM watch a JOIN paper b ON a.paperId = b.id `;
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//查询该记录是否存在
+router.post('/isWatch', jsonParser, (req, res, next) => {
+    let { paperId } = req.body
+    console.log(req.body);
+    let sql = `select * from watch where paperId = ${paperId}`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            res.send({
+                status: 500,
+            })
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//修改喜欢
+router.post('/changeLikeStatus', jsonParser, (req, res) => {
+    let {lookId, paperId,likeStatus} = req.body
+    let sql = `update watch set likeStatus='${likeStatus}' where lookId = ${lookId} && paperId = ${paperId}`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//修改喜欢
+router.post('/changeCaseStatus', jsonParser, (req, res) => {
+    let {lookId, paperId,caseStatus} = req.body
+    let sql = `update watch set caseStatus='${caseStatus}' where lookId = ${lookId} && paperId = ${paperId}`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+
 //修改用户积分
 router.post('/changeIntegral', jsonParser, (req, res) => {
-    let { id, integral } = req.body
-    let sql = `update user set integral='${integral + 5}' where id=${id}`
+    let { id, integral,type } = req.body
+    let sql = `update user set integral='${type? integral + 1 : integral - 1}' where id=${id}`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -116,6 +196,8 @@ router.post('/changeIntegral', jsonParser, (req, res) => {
         }
     });
 })
+
+//通过id查询当前用户积分
 router.post('/searchIntegral', jsonParser, (req, res) => {
     let { id } = req.body
     let sql = `select integral from user where id=${id}`
@@ -127,21 +209,11 @@ router.post('/searchIntegral', jsonParser, (req, res) => {
         }
     });
 })
-// router.post('/searchAuthor', jsonParser, (req, res) => {
-//     let { id } = req.body
-//     let sql = `select score,name,@m1:=@m1+1 r from scores,(select @m1:=0)a where id=${id} order by score desc limit 3`
-//     connection.query(sql, (err, result) => {
-//         if (err) {
-//             console.log('错误', err)
-//         } else {
-//             res.json(result)
-//         }
-//     });
-// })
 
-//查询留言
-router.get('/searchinput', (req, res) => {
-    let sql = 'select * from input';
+//修改文章likes
+router.post('/changeLikes', jsonParser, (req, res) => {
+    let { id, likes,type } = req.body
+    let sql = `update paper set likes='${type? likes + 1 : likes - 1}' where id=${id}`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -150,9 +222,59 @@ router.get('/searchinput', (req, res) => {
         }
     });
 })
-//查询留言
+
+//通过id查询当前文章喜欢数
+router.post('/searchLikes', jsonParser, (req, res) => {
+    let { id } = req.body
+    let sql = `select likes from paper where id=${id}`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+
+//查询积分排名前三的作者
 router.get('/searchAuther', (req, res) => {
     let sql = 'SELECT * FROM user ORDER BY integral DESC LIMIT 3';
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+
+//查询点赞排名前6的文章
+router.get('/searchSixPage', (req, res) => {
+    let sql = 'SELECT * FROM paper ORDER BY likes DESC LIMIT 6';
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+
+//查询点赞排名前9的文章
+router.get('/searchNinePage', (req, res) => {
+    let sql = 'SELECT * FROM paper ORDER BY likes DESC LIMIT 9';
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+
+//查询点赞排名前1的文章
+router.get('/searchOnePage', (req, res) => {
+    let sql = 'SELECT * FROM paper ORDER BY likes DESC LIMIT 1';
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
