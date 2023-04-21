@@ -16,41 +16,25 @@ router.get('/search', (req, res) => {
         }
     });
 })
-//查询所有作者
-router.get('/searchAll', (req, res) => {
-    let sql = 'select * from user';
-    connection.query(sql, (err, result) => {
-        if (err) {
-            console.log('错误', err)
-        } else {
-            res.json(result)
-        }
-    });
-})
+
 //文章查询
 router.post('/searchPaper', jsonParser, (req, res) => {
     const ids = req.body.id
     const page = req.body.page ? req.body.page : 0
-    console.log(page);
     let sql = ''
     if (req.body = {} && !req.body.id) {
-        sql = `select * from paper limit ${page},6`;
-        // limit 0,6'
-
+        sql = `select * from paper limit ${page*6},6`;
         let totalSql = 'select * from paper'
         connection.query(totalSql, (err, result) => {
             if (err) {
                 console.log(err);
             } else {
-                //  num = ''
                 let num = result.length
                 let allData = result
                 connection.query(sql, (err, result) => {
                     if (err) {
                         console.log('错误', err)
                     } else {
-                        // res.json(result)
-                        // res.json(result)
                         res.send({
                             allData: allData,
                             total: num,
@@ -68,10 +52,7 @@ router.post('/searchPaper', jsonParser, (req, res) => {
             if (err) {
                 console.log('错误', err)
             } else {
-                // res.json(result)
-                // res.json(result)
                 res.send({
-                    // allData: allData,
                     total: result.length,
                     data: result
                 })
@@ -95,8 +76,8 @@ router.post('/add', jsonParser, (req, res, next) => {
 })
 //发布文章
 router.post('/newPaper', jsonParser, (req, res, next) => {
-    let { name, title, content, imgUrl, createTime, titleKey, titleImgUrl } = req.body
-    let sql = `insert into paper (auther,title,content,imgUrl,createTime,titleKey,titleImgUrl) values('${name}','${title}','${content}','${imgUrl}','${createTime}','${titleKey}','${titleImgUrl}')`
+    let { name, title, content, imgUrl, createTime, titleKey, titleImgUrl,autherId } = req.body
+    let sql = `insert into paper (auther,title,content,imgUrl,createTime,titleKey,titleImgUrl,autherId) values('${name}','${title}','${content}','${imgUrl}','${createTime}','${titleKey}','${titleImgUrl}','${autherId}')`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -287,8 +268,20 @@ router.get('/searchOnePage', (req, res) => {
 
 //增加留言
 router.post('/addinput', jsonParser, (req, res, next) => {
-    let { inputContent } = req.body
-    let sql = `insert into input (inputContent) values('${inputContent}')`
+    let { paperId,userId,userName,content,createTime,imgUrl } = req.body
+    let sql = `insert into input (paperId,userId,userName,content,createTime,imgUrl) values('${paperId}','${userId}','${userName}','${content}','${createTime}','${imgUrl}')`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//查询留言
+router.post('/searchInput', jsonParser, (req, res, next) => {
+    let { paperId } = req.body
+    let sql = `select * from input where paperId=${paperId}`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -300,8 +293,8 @@ router.post('/addinput', jsonParser, (req, res, next) => {
 
 //修改用户信息
 router.post('/change', jsonParser, (req, res) => {
-    let { id, name, oldpass, email, address, birth } = req.body
-    let sql = `update user set username='${name}',password='${oldpass}',email='${email}',address='${address}',birth='${birth}' where id=${id}`
+    let { id, name, region} = req.body
+    let sql = `update user set name='${name}',region='${region}' where id=${id}`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -316,6 +309,31 @@ router.post('/changeuser', jsonParser, (req, res) => {
     //通过id修改name和age属性值
     let { id, username, password, rootId, email, address, birth } = req.body
     let sql = `update user set username='${username}',password='${password}',rootId='${rootId}',email='${email}',address='${address}',birth='${birth}' where id=${id}`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//后台修改用户积分
+router.post('/changePoint', jsonParser, (req, res) => {
+    //通过id修改name和age属性值
+    let { id, integral } = req.body
+    let sql = `update user set integral='${integral}' where id=${id}`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//后台修改用户权限
+router.post('/changeuserRoot', jsonParser, (req, res) => {
+    let { id,root } = req.body
+    let sql = `update user set root='${root}' where id=${id}`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -350,5 +368,96 @@ router.post('/delinput', jsonParser, (req, res) => {
         }
     });
 })
-
+//前台查询展示公告
+router.get('/searchHomeMsg', (req, res) => {
+    let sql = `select * from message where isShow = 1`;
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//查询所有公告
+router.get('/searchMsg', (req, res) => {
+    let sql = 'SELECT * FROM message';
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//新增公告
+router.post('/addMsg', jsonParser, (req, res, next) => {
+    let { userId,userName,content,createTime } = req.body
+    let sql = `insert into message (userId,userName,content,createTime) values('${userId}','${userName}','${content}','${createTime}')`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//后台修改公告是否显示
+router.post('/changeMsg', jsonParser, (req, res) => {
+    let { msgId,content,isShow } = req.body
+    let sql = `update message set content='${content}',isShow='${isShow}' where msgId=${msgId}`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//查询所有公告
+router.get('/changeAllMsg', (req, res) => {
+    let sql = `update message set isShow='${0}' where isShow='${1}'`;
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//后台删除公告
+router.post('/delMsg', jsonParser, (req, res) => {
+    let { id } = req.body
+    let sql = `delete from message where msgId=${id}`;
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//后台删除评论
+router.post('/deleteInput', jsonParser, (req, res) => {
+    let { id } = req.body
+    let sql = `delete from input where id=${id}`;
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+//后台查询所有评论
+router.get('/searchAllInput', (req, res) => {
+    let sql = `select * from input`;
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
 module.exports = router

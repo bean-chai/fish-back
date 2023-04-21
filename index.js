@@ -1,9 +1,9 @@
 /*
  * @Author: chaichai chaichai@cute.com
  * @Date: 2022-09-15 09:33:56
- * @LastEditors: Chai chai 2787922490@qq.com
- * @LastEditTime: 2023-04-15 21:01:43
- * @FilePath: \webclassBack\webClassBack\index.js
+ * @LastEditors: fengyuanyao fengyuanyao@fanyu.com
+ * @LastEditTime: 2023-04-21 16:29:37
+ * @FilePath: \毕设后台\webFinalBack\index.js
  * @Description: 
  * 
  * Copyright (c) 2022 by CQUCC-4-433, All Rights Reserved. 
@@ -30,7 +30,7 @@ app.use(bodyParser.json({
 app.use(bodyParser.urlencoded({
     limit: '10000kb',
     extended: true,
-    parameterLimit: 50000,//这个得加，不加没效果
+    parameterLimit: 50000,
 }))
 
 app.listen(3000, () => {
