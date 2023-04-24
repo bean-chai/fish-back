@@ -23,13 +23,13 @@ router.post('/searchPaper', jsonParser, (req, res) => {
     const page = req.body.page ? req.body.page : 0
     let sql = ''
     if (req.body = {} && !req.body.id) {
-        sql = `select * from paper limit ${page*6},6`;
+        sql = `select * from paper where passStatus = 1 limit ${page*6},6`;
         let totalSql = 'select * from paper'
         connection.query(totalSql, (err, result) => {
             if (err) {
                 console.log(err);
             } else {
-                let num = result.length
+                // let num = result.length
                 let allData = result
                 connection.query(sql, (err, result) => {
                     if (err) {
@@ -37,7 +37,7 @@ router.post('/searchPaper', jsonParser, (req, res) => {
                     } else {
                         res.send({
                             allData: allData,
-                            total: num,
+                            total: result.length,
                             data: result
                         })
                     }
@@ -47,7 +47,7 @@ router.post('/searchPaper', jsonParser, (req, res) => {
         })
     } else {
         // let { id } = ids
-        sql = `select * from paper where id = ${ids}`;
+        sql = `select * from paper where id = ${ids} and passStatus = 1`;
         connection.query(sql, (err, result) => {
             if (err) {
                 console.log('错误', err)
