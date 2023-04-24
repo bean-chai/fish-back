@@ -61,6 +61,17 @@ router.post('/searchPaper', jsonParser, (req, res) => {
     }
 })
 
+//后台查询所有文章
+router.get('/searchAllPaper', (req, res) => {
+    let sql = 'select * from paper';
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
 
 //注册
 router.post('/add', jsonParser, (req, res, next) => {
@@ -219,7 +230,20 @@ router.post('/searchLikes', jsonParser, (req, res) => {
 
 //查询积分排名前三的作者
 router.get('/searchAuther', (req, res) => {
-    let sql = 'SELECT * FROM user ORDER BY integral DESC LIMIT 3';
+    let sql = 'SELECT * FROM user where showStatus = 1 ORDER BY integral DESC LIMIT 3';
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+
+//通过id查询当前文章喜欢数
+router.post('/changeIsShow', jsonParser, (req, res) => {
+    let { id,showStatus} = req.body
+    let sql = `update user set showStatus='${showStatus}' where id=${id}`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -231,7 +255,7 @@ router.get('/searchAuther', (req, res) => {
 
 //查询点赞排名前6的文章
 router.get('/searchSixPage', (req, res) => {
-    let sql = 'SELECT * FROM paper ORDER BY likes DESC LIMIT 6';
+    let sql = 'SELECT * FROM paper where passStatus = 1 ORDER BY likes DESC LIMIT 6';
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -243,7 +267,7 @@ router.get('/searchSixPage', (req, res) => {
 
 //查询点赞排名前9的文章
 router.get('/searchNinePage', (req, res) => {
-    let sql = 'SELECT * FROM paper ORDER BY likes DESC LIMIT 9';
+    let sql = 'SELECT * FROM paper where passStatus = 1 ORDER BY likes DESC LIMIT 9';
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -255,7 +279,7 @@ router.get('/searchNinePage', (req, res) => {
 
 //查询点赞排名前1的文章
 router.get('/searchOnePage', (req, res) => {
-    let sql = 'SELECT * FROM paper ORDER BY likes DESC LIMIT 1';
+    let sql = 'SELECT * FROM paper where passStatus = 1 ORDER BY likes DESC LIMIT 1';
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -449,6 +473,48 @@ router.post('/deleteInput', jsonParser, (req, res) => {
         }
     });
 })
+
+//文章审核通过
+router.post('/isPass', jsonParser, (req, res) => {
+    let { id } = req.body
+    let sql = `update paper set passStatus= 1 where id=${id}`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+
+//文章审核驳回
+router.post('/isBack', jsonParser, (req, res) => {
+    //通过id修改name和age属性值
+    let { id, passContent } = req.body
+    let sql = `update paper set passContent='${passContent}', passStatus = 0 where id=${id}`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+
+//前台查看驳回信息
+router.post('/checkBack', jsonParser, (req, res) => {
+    //通过id修改name和age属性值
+    let { autherId } = req.body
+    let sql = `select * from paper where autherId = 4 AND passContent != '0'`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.log('错误', err)
+        } else {
+            res.json(result)
+        }
+    });
+})
+
 //后台查询所有评论
 router.get('/searchAllInput', (req, res) => {
     let sql = `select * from input`;
