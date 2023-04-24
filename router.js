@@ -23,13 +23,13 @@ router.post('/searchPaper', jsonParser, (req, res) => {
     const page = req.body.page ? req.body.page : 0
     let sql = ''
     if (req.body = {} && !req.body.id) {
-        sql = `select * from paper where passStatus = 1 limit ${page*6},6`;
-        let totalSql = 'select * from paper'
+        sql = `select * from paper where passStatus = 1 limit ${page * 6},6`;
+        let totalSql = 'select * from paper where passStatus = 1'
         connection.query(totalSql, (err, result) => {
             if (err) {
                 console.log(err);
             } else {
-                // let num = result.length
+                let num = result.length
                 let allData = result
                 connection.query(sql, (err, result) => {
                     if (err) {
@@ -37,7 +37,7 @@ router.post('/searchPaper', jsonParser, (req, res) => {
                     } else {
                         res.send({
                             allData: allData,
-                            total: result.length,
+                            total: num,
                             data: result
                         })
                     }
@@ -47,7 +47,7 @@ router.post('/searchPaper', jsonParser, (req, res) => {
         })
     } else {
         // let { id } = ids
-        sql = `select * from paper where id = ${ids} and passStatus = 1`;
+        sql = `select * from paper where id = ${ids}`;
         connection.query(sql, (err, result) => {
             if (err) {
                 console.log('错误', err)
@@ -87,7 +87,7 @@ router.post('/add', jsonParser, (req, res, next) => {
 })
 //发布文章
 router.post('/newPaper', jsonParser, (req, res, next) => {
-    let { name, title, content, imgUrl, createTime, titleKey, titleImgUrl,autherId } = req.body
+    let { name, title, content, imgUrl, createTime, titleKey, titleImgUrl, autherId } = req.body
     let sql = `insert into paper (auther,title,content,imgUrl,createTime,titleKey,titleImgUrl,autherId) values('${name}','${title}','${content}','${imgUrl}','${createTime}','${titleKey}','${titleImgUrl}','${autherId}')`
     connection.query(sql, (err, result) => {
         if (err) {
@@ -112,14 +112,14 @@ router.get('/deleteWatch', (req, res) => {
 
 //录入浏览记录
 router.post('/watch', jsonParser, (req, res, next) => {
-    let { lookId, paperId, caseStatus,likeStatus } = req.body
+    let { lookId, paperId, caseStatus, likeStatus } = req.body
     console.log(req.body);
     let sql = `insert into watch (lookId,paperId, caseStatus,likeStatus) values('${lookId}','${paperId}','${caseStatus}','${likeStatus}')`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
         } else {
-            console.log(result,'result');
+            console.log(result, 'result');
             res.json(result)
         }
     });
@@ -153,7 +153,7 @@ router.post('/isWatch', jsonParser, (req, res, next) => {
 })
 //修改喜欢
 router.post('/changeLikeStatus', jsonParser, (req, res) => {
-    let {lookId, paperId,likeStatus} = req.body
+    let { lookId, paperId, likeStatus } = req.body
     let sql = `update watch set likeStatus='${likeStatus}' where lookId = ${lookId} && paperId = ${paperId}`
     connection.query(sql, (err, result) => {
         if (err) {
@@ -165,7 +165,7 @@ router.post('/changeLikeStatus', jsonParser, (req, res) => {
 })
 //修改喜欢
 router.post('/changeCaseStatus', jsonParser, (req, res) => {
-    let {lookId, paperId,caseStatus} = req.body
+    let { lookId, paperId, caseStatus } = req.body
     let sql = `update watch set caseStatus='${caseStatus}' where lookId = ${lookId} && paperId = ${paperId}`
     connection.query(sql, (err, result) => {
         if (err) {
@@ -178,8 +178,8 @@ router.post('/changeCaseStatus', jsonParser, (req, res) => {
 
 //修改用户积分
 router.post('/changeIntegral', jsonParser, (req, res) => {
-    let { id, integral,type } = req.body
-    let sql = `update user set integral='${type? integral + 1 : integral - 1}' where id=${id}`
+    let { id, integral, type } = req.body
+    let sql = `update user set integral='${type ? integral + 1 : integral - 1}' where id=${id}`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -204,8 +204,8 @@ router.post('/searchIntegral', jsonParser, (req, res) => {
 
 //修改文章likes
 router.post('/changeLikes', jsonParser, (req, res) => {
-    let { id, likes,type } = req.body
-    let sql = `update paper set likes='${type? likes + 1 : likes - 1}' where id=${id}`
+    let { id, likes, type } = req.body
+    let sql = `update paper set likes='${type ? likes + 1 : likes - 1}' where id=${id}`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
@@ -242,7 +242,7 @@ router.get('/searchAuther', (req, res) => {
 
 //通过id查询当前文章喜欢数
 router.post('/changeIsShow', jsonParser, (req, res) => {
-    let { id,showStatus} = req.body
+    let { id, showStatus } = req.body
     let sql = `update user set showStatus='${showStatus}' where id=${id}`
     connection.query(sql, (err, result) => {
         if (err) {
@@ -292,7 +292,7 @@ router.get('/searchOnePage', (req, res) => {
 
 //增加留言
 router.post('/addinput', jsonParser, (req, res, next) => {
-    let { paperId,userId,userName,content,createTime,imgUrl } = req.body
+    let { paperId, userId, userName, content, createTime, imgUrl } = req.body
     let sql = `insert into input (paperId,userId,userName,content,createTime,imgUrl) values('${paperId}','${userId}','${userName}','${content}','${createTime}','${imgUrl}')`
     connection.query(sql, (err, result) => {
         if (err) {
@@ -317,7 +317,7 @@ router.post('/searchInput', jsonParser, (req, res, next) => {
 
 //修改用户信息
 router.post('/change', jsonParser, (req, res) => {
-    let { id, name, region} = req.body
+    let { id, name, region } = req.body
     let sql = `update user set name='${name}',region='${region}' where id=${id}`
     connection.query(sql, (err, result) => {
         if (err) {
@@ -356,7 +356,7 @@ router.post('/changePoint', jsonParser, (req, res) => {
 })
 //后台修改用户权限
 router.post('/changeuserRoot', jsonParser, (req, res) => {
-    let { id,root } = req.body
+    let { id, root } = req.body
     let sql = `update user set root='${root}' where id=${id}`
     connection.query(sql, (err, result) => {
         if (err) {
@@ -416,7 +416,7 @@ router.get('/searchMsg', (req, res) => {
 })
 //新增公告
 router.post('/addMsg', jsonParser, (req, res, next) => {
-    let { userId,userName,content,createTime } = req.body
+    let { userId, userName, content, createTime } = req.body
     let sql = `insert into message (userId,userName,content,createTime) values('${userId}','${userName}','${content}','${createTime}')`
     connection.query(sql, (err, result) => {
         if (err) {
@@ -428,7 +428,7 @@ router.post('/addMsg', jsonParser, (req, res, next) => {
 })
 //后台修改公告是否显示
 router.post('/changeMsg', jsonParser, (req, res) => {
-    let { msgId,content,isShow } = req.body
+    let { msgId, content, isShow } = req.body
     let sql = `update message set content='${content}',isShow='${isShow}' where msgId=${msgId}`
     connection.query(sql, (err, result) => {
         if (err) {
@@ -505,7 +505,7 @@ router.post('/isBack', jsonParser, (req, res) => {
 router.post('/checkBack', jsonParser, (req, res) => {
     //通过id修改name和age属性值
     let { autherId } = req.body
-    let sql = `select * from paper where autherId = 4 AND passContent != '0'`
+    let sql = `select * from paper where autherId = ${autherId} AND passContent != '0'`
     connection.query(sql, (err, result) => {
         if (err) {
             console.log('错误', err)
