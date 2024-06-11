@@ -1,25 +1,26 @@
 /*
  * @Author: chaichai chaichai@cute.com
  * @Date: 2022-09-15 09:44:55
- * @LastEditors: Chai chai 2787922490@qq.com
- * @LastEditTime: 2023-04-12 22:49:11
- * @FilePath: \webClassBack\model\sql.js
+ * @LastEditors: chaichai 2787922490@qq.com
+ * @LastEditTime: 2024-06-11 15:12:29
+ * @FilePath: \webFinalBack\model\sql.js
  * @Description: 
  * 
  * Copyright (c) 2022 by CQUCC-4-433, All Rights Reserved. 
  */
-const mysql = require('mysql')
+const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
-    host: 'localhost',
+    host: '45.155.220.111',
+    port: 13306,
     user: 'root',
-    password: 'chaichai',
-    database: 'webclass'
-})
-
-connection.connect((err) => {
-    if (err) return console.log(`数据库连接失败，错误：${err.stack}`)
-    console.log('mysql数据库连接成功')
+    password: 'chai1119',
+    database: 'blogback'
 });
 
-module.exports = connection
+connection.connect((err) => {
+    if (err) return console.log(`数据库连接失败，错误：${err.stack}`);
+    console.log('mysql数据库连接成功');
+});
+
+module.exports = connection;
