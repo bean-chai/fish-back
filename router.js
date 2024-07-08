@@ -5,44 +5,160 @@ const jsonParser = bodyParser.json()
 
 const router = express.Router()
 
-//登录
-router.get('/search', (req, res) => {
-    let sql = 'select * from moneyList';
+// 查积分
+router.get('/searchall', (req, res) => {
+    let sql = 'SELECT * FROM ranks ORDER BY points DESC LIMIT 10';
+    // 将 'column_name' 替换为你想要按其降序排序的列名
+
     connection.query(sql, (err, result) => {
         if (err) {
-            console.log('错误', err)
+            console.log('错误', err);
         } else {
-            res.json(result)
+            res.json(result);
         }
     });
-})
+});
+
+// // 个人积分
+// router.post('/search', jsonParser, (req, res) => {
+//     const { name } = req.body;
+//     const sql = `SELECT * FROM ranks WHERE lastDisplayName LIKE ?`;
+//     connection.query(sql, [`%${name}%`], (err, result) => {
+//         if (err) {
+//             console.log('错误', err);
+//             res.status(500).json({ error: '数据库查询错误' });
+//         } else {
+//             res.json(result);
+//         }
+//     });
+// });
+
+// // 物品id
+// router.post('/searchid', jsonParser, (req, res) => {
+//     const { name } = req.body;
+//     const sql = `SELECT * FROM uconomyitemshop WHERE itemname LIKE ?`;
+//     connection.query(sql, [`%${name}%`], (err, result) => {
+//         if (err) {
+//             console.log('错误', err);
+//             res.status(500).json({ error: '数据库查询错误' });
+//         } else {
+//             res.json(result);
+//         }
+//     });
+// });
+
+
+// 创建一个通用的查询函数
+function executeQuery(sql, params, res) {
+    connection.query(sql, params, (err, result) => {
+        if (err) {
+            console.log('错误', err);
+            res.status(500).json({ error: '数据库查询错误' });
+        } else {
+            res.json(result);
+        }
+    });
+}
+
+// 个人积分
+router.post('/search', jsonParser, (req, res) => {
+    const { name } = req.body;
+    const sql = `SELECT * FROM ranks WHERE lastDisplayName LIKE ?`;
+    const params = [`%${name}%`];
+    executeQuery(sql, params, res);
+});
+
+// 物品id
+router.post('/searchid', jsonParser, (req, res) => {
+    const { name } = req.body;
+    const sql = `SELECT * FROM uconomyitemshop WHERE itemname LIKE ?`;
+    const params = [`%${name}%`];
+    executeQuery(sql, params, res);
+});
+
+// 载具id
+router.post('/searchcar', jsonParser, (req, res) => {
+    const { name } = req.body;
+    const sql = `SELECT * FROM uconomyvehicleshop WHERE vehiclename LIKE ?`;
+    connection.query(sql, [`%${name}%`], (err, result) => {
+        if (err) {
+            console.log('错误', err);
+            res.status(500).json({ error: '数据库查询错误' });
+        } else {
+            res.json(result);
+        }
+    });
+});
+
+// 查个体积分
+// //注册
+// router.post('/search', jsonParser, (req, res, next) => {
+//     console.log(11111);
+//     let { name } = req.body
+//     console.log(name, "name");
+//     let sql = `select * from ranks where lastDisplayName like ${name}`
+//     connection.query(sql, (err, result) => {
+//         if (err) {
+//             console.log('错误', err)
+//         } else {
+//             res.json(result)
+//         }
+//     });
+// })
+
+// router.post('/search', (req, res) => {
+//     console.log(11111);
+//     const { name } = req.body;
+//     console.log(name, "name");
+//     const sql = `SELECT * FROM ranks WHERE lastDisplayName LIKE ?`;
+//     connection.query(sql, [`%${name}%`], (err, result) => {
+//         if (err) {
+//             console.log('错误', err);
+//             res.status(500).json({ error: '数据库查询错误' });
+//         } else {
+//             res.json(result);
+//         }
+//     });
+// });
+
+//登录
+// router.get('/search', (req, res) => {
+//     let sql = 'select * from moneyList';
+//     connection.query(sql, (err, result) => {
+//         if (err) {
+//             console.log('错误', err)
+//         } else {
+//             res.json(result)
+//         }
+//     });
+// })
 
 // //修改喜欢
-router.post('/changeMoney', jsonParser, async (req, res) => {
-    try {
-        const { moneyList } = req.body;
-        console.log(moneyList, "moneyList");
+// router.post('/changeMoney', jsonParser, async (req, res) => {
+//     try {
+//         const { moneyList } = req.body;
+//         console.log(moneyList, "moneyList");
 
-        for (const item of moneyList) {
-            let sql = `UPDATE moneyList SET money='${item.money}' WHERE zone = '${item.zone}'`;
-            await new Promise((resolve, reject) => {
-                connection.query(sql, (err, result) => {
-                    if (err) {
-                        console.log('错误', err);
-                        reject(err);
-                    } else {
-                        resolve(result);
-                    }
-                });
-            });
-        }
+//         for (const item of moneyList) {
+//             let sql = `UPDATE moneyList SET money='${item.money}' WHERE zone = '${item.zone}'`;
+//             await new Promise((resolve, reject) => {
+//                 connection.query(sql, (err, result) => {
+//                     if (err) {
+//                         console.log('错误', err);
+//                         reject(err);
+//                     } else {
+//                         resolve(result);
+//                     }
+//                 });
+//             });
+//         }
 
-        res.json({ success: true });
-    } catch (error) {
-        console.error('处理请求时出错', error);
-        res.status(500).json({ success: false, message: '处理请求时出错' });
-    }
-});
+//         res.json({ success: true });
+//     } catch (error) {
+//         console.error('处理请求时出错', error);
+//         res.status(500).json({ success: false, message: '处理请求时出错' });
+//     }
+// });
 
 // //文章查询
 // router.post('/searchPaper', jsonParser, (req, res) => {

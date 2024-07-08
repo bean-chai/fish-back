@@ -1,9 +1,9 @@
 /*
  * @Author: chaichai chaichai@cute.com
  * @Date: 2022-09-15 09:33:56
- * @LastEditors: fengyuanyao fengyuanyao@fanyu.com
- * @LastEditTime: 2023-04-21 16:29:37
- * @FilePath: \毕设后台\webFinalBack\index.js
+ * @LastEditors: chaichai 2787922490@qq.com
+ * @LastEditTime: 2024-07-05 10:18:18
+ * @FilePath: \webFinalBack\index.js
  * @Description: 
  * 
  * Copyright (c) 2022 by CQUCC-4-433, All Rights Reserved. 
@@ -23,7 +23,7 @@ app.all("*", (req, res, next) => {
     next();
 });
 
-app.use('/chai', mainRouter)
+app.use('/fish', mainRouter)
 app.use(bodyParser.json({
     limit: '10000kb'
 })); //最大上传大小不超过10000kb
@@ -33,6 +33,6 @@ app.use(bodyParser.urlencoded({
     parameterLimit: 50000,
 }))
 
-app.listen(3000, () => {
+app.listen(3121, () => {
     console.log('柴柴后台启动！');
 })
